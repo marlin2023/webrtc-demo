@@ -1,5 +1,11 @@
 package com.jabber.audio.encoder;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
@@ -7,7 +13,9 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +31,10 @@ public class MainActivity extends Activity {
 	byte[] outBuffer;
 	int frequency = 8000;
 	
+    //File
+    File recordingFile;
+    File path1 ;
+    DataOutputStream dos ;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,6 +60,21 @@ public class MainActivity extends Activity {
 				AudioTrack.MODE_STREAM);
 
 
+        //new file 
+        File path1 = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/yanlong");
+        path1.mkdirs();
+        try{
+        	recordingFile = File.createTempFile("recording", ".spx_recv" ,path1);
+        }catch(IOException e1){
+        	throw new RuntimeException("sdafjjjjjjjjjj" , e1);
+        }
+        
+        try {
+			dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(recordingFile)));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -92,7 +119,15 @@ public class MainActivity extends Activity {
 			while(isPlaying){
 				//receive audio
 				audioReceiveJniApi1.yyRtpReceiveSpeex(rtpHandle ,speexData); //上层收到数据直接放在speexData中
-				
+				//write file
+				try {
+					dos.write(speexData.array());
+					dos.flush();
+					Log.e("chris_magic", "write speex data");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				//decode audio 
 				pcmPlayBuffer = audioDecodeSpeex1.spxDecodeFrame(speexHandle, speexData.array());
 				//play audio

@@ -169,17 +169,16 @@ public class MainActivity extends Activity {
                         Log.e("chris_magic" ,"CHRIS_MAGIC_YANLONG....... " + "bufferReadResult = " + bufferReadResult );
                     }
                     
-                    
+//                    
                     webrtc_buffer = (audioWebrtcNs.yyWebRtcNsProcess(webrtc_handle, buffer)).clone();
-//      
-                    for(ii = 0; ii < 160 ; ii ++){
-                    	temp[2*ii] = (byte)(webrtc_buffer[ii] & 0xff);
-                    	temp[2*ii + 1] = (byte)((webrtc_buffer[ii] >> 8) & 0xff);                    	
-                    }
-
-                    
-                    dos.write(temp,0 ,320);
-                    dos.flush();
+//                    for(ii = 0; ii < 160 ; ii ++){
+//                    	temp[2*ii] = (byte)(webrtc_buffer[ii] & 0xff);
+//                    	temp[2*ii + 1] = (byte)((webrtc_buffer[ii] >> 8) & 0xff);                    	
+//                    }
+//
+//                    
+//                    dos.write(temp,0 ,320);
+//                    dos.flush();
                    
                     //这里要维护一个队列。 拼凑每次编码一帧数据大小。
                     //开始编码，每次编码320字节信息
@@ -188,7 +187,8 @@ public class MainActivity extends Activity {
 //                    Log.e("chirs_magic", speexEncodedData + "");
                     audioTransJniApi1.yyRtpSendAmr(rtpHandle ,speexEncodedData.array() ,38);
                     
-//                    dos.write(speexEncodedData.array());
+                    dos.write(speexEncodedData.array());
+                    dos.flush();
                 }
                 audioRecord.stop();
 

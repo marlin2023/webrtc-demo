@@ -1,5 +1,5 @@
-/home/chris/workspace_android/JabberAudio/obj/local/armeabi/objs/webrtc_aecm/delay_estimator_wrapper.o: \
- /home/chris/workspace_android/JabberAudio/jni/aecm/delay_estimator_wrapper.c \
+obj/local/armeabi/objs/webrtc_aecm/delay_estimator_wrapper.o: \
+ jni/aecm/delay_estimator_wrapper.c \
  /home/chris/work/webrtc/source/voe/3.31/webrtc/modules/audio_processing/utility/delay_estimator_wrapper.h \
  /home/chris/work/webrtc/source/voe/3.31/webrtc/typedefs.h \
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/stdint.h \

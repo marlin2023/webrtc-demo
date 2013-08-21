@@ -7,11 +7,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 JNIEXPORT jint JNICALL Java_com_jabber_audio_encoder_AudioWebrtcAecm_yy_1webrtc_1aecm_1initiate
   (JNIEnv *env, jobject obj, jint samp_freq){
 
-
+	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"in audioWebrtcAecm initiate function ");
 	int ret ;
 	void* AECM_instance;
 
@@ -47,33 +46,30 @@ JNIEXPORT jshortArray JNICALL Java_com_jabber_audio_encoder_AudioWebrtcAecm_yy_1
 //	                fwrite(output,2,160,foutput);
 	//get handle
 	void* AECM_instance = (void* )handle;
-
 	//create native shorts from java shorts
 	jshort *native_nearend_noisy = (*env)->GetShortArrayElements(env, nearendNoisy, NULL);
 	jshort *native_nearend_clean = (*env)->GetShortArrayElements(env, nearendClean, NULL);
-
 	//allocate memory for output data
 	jint length = (*env)->GetArrayLength(env, nearendNoisy);
 	jshortArray temp = (*env)->NewShortArray(env, length);
 	jshort *native_output_frame = (*env)->GetShortArrayElements(env, temp, 0);
-
 //	int32_t WebRtcAecm_BufferFarend(void* aecmInst,
 //	                                const int16_t* farend,
 //	                                int16_t nrOfSamples);
-	if( 0!=WebRtcAecm_BufferFarend(AECM_instance,/*farend*/NULL,160) ){  //farend value??? audio
+	short farend[160] = {0};
+	if( 0!=WebRtcAecm_BufferFarend(AECM_instance,farend,160) ){  //farend value??? audio
 		__android_log_print(ANDROID_LOG_ERROR ,TAG ,"WebRtcAec_BufferFarend failed");
 	}
-
 //	int32_t WebRtcAecm_Process(void* aecmInst,
 //	                           const int16_t* nearendNoisy,
 //	                           const int16_t* nearendClean,
 //	                           int16_t* out,
 //	                           int16_t nrOfSamples,
 //	                           int16_t msInSndCardBuf);
-	if( 0!=WebRtcAecm_Process(AECM_instance,nearendNoisy,nearendClean,output_shorts,NULL,160,100,0) ){
+//	if( 0!=WebRtcAecm_Process(AECM_instance,nearendNoisy,nearendClean,native_output_frame,160,0) ){
+	if( 0!=WebRtcAecm_Process(AECM_instance,native_nearend_noisy,native_nearend_clean,native_output_frame,160,0) ){
 		__android_log_print(ANDROID_LOG_ERROR ,TAG ,"WebRtcAec_Process failed ");
 	}
-
 
 
 	//convert native output to java layer output
@@ -81,7 +77,8 @@ JNIEXPORT jshortArray JNICALL Java_com_jabber_audio_encoder_AudioWebrtcAecm_yy_1
 	(*env)->SetShortArrayRegion(env, output_shorts, 0, length, native_output_frame);
 
 	//cleanup and return
-	(*env)->ReleaseShortArrayElements(env, input_frame, native_input_frame, 0);
+	(*env)->ReleaseShortArrayElements(env, nearendNoisy, native_nearend_noisy, 0);
+	(*env)->ReleaseShortArrayElements(env, nearendClean, native_nearend_clean, 0);
 	(*env)->ReleaseShortArrayElements(env, temp, native_output_frame, 0);
 
 	return output_shorts;

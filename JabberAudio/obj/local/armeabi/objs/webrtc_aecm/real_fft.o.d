@@ -1,5 +1,4 @@
-/home/chris/workspace_android/JabberAudio/obj/local/armeabi/objs/webrtc_aecm/real_fft.o: \
- /home/chris/workspace_android/JabberAudio/jni/aecm/real_fft.c \
+obj/local/armeabi/objs/webrtc_aecm/real_fft.o: jni/aecm/real_fft.c \
  /home/chris/work/webrtc/source/voe/3.31/webrtc/common_audio/signal_processing/include/real_fft.h \
  /home/chris/work/webrtc/source/voe/3.31/webrtc/typedefs.h \
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/stdint.h \

@@ -1,6 +1,5 @@
-/home/chris/workspace_android/JabberAudio/obj/local/armeabi/objs/webrtc_aecm/ring_buffer.o: \
- /home/chris/workspace_android/JabberAudio/jni/aecm/ring_buffer.c \
- /home/chris/workspace_android/JabberAudio/jni/aecm/ring_buffer.h \
+obj/local/armeabi/objs/webrtc_aecm/ring_buffer.o: jni/aecm/ring_buffer.c \
+ jni/aecm/ring_buffer.h \
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/stdlib.h \
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/sys/cdefs.h \
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/sys/cdefs_elf.h \
@@ -23,7 +22,7 @@
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/sys/sysmacros.h \
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/memory.h
 
-/home/chris/workspace_android/JabberAudio/jni/aecm/ring_buffer.h:
+jni/aecm/ring_buffer.h:
 
 /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/stdlib.h:
 

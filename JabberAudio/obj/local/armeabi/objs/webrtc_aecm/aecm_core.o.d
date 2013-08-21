@@ -1,5 +1,4 @@
-/home/chris/workspace_android/JabberAudio/obj/local/armeabi/objs/webrtc_aecm/aecm_core.o: \
- /home/chris/workspace_android/JabberAudio/jni/aecm/aecm_core.c \
+obj/local/armeabi/objs/webrtc_aecm/aecm_core.o: jni/aecm/aecm_core.c \
  /home/chris/work/webrtc/source/voe/3.31/webrtc/modules/audio_processing/aecm/aecm_core.h \
  /home/chris/work/webrtc/source/voe/3.31/webrtc/common_audio/signal_processing/include/signal_processing_library.h \
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/string.h \

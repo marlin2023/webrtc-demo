@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_com_jabber_audio_encoder_AudioWebrtcAecm_yy_1webrtc_1aecm_1initiate
-  (JNIEnv *, jobject, jint);
+(JNIEnv *env, jobject obj, jint samp_freq);
 
 /*
  * Class:     com_jabber_audio_encoder_AudioWebrtcAecm

@@ -1,5 +1,5 @@
-/home/chris/workspace_android/JabberAudio/obj/local/armeabi/objs/webrtc_aecm/echo_control_mobile.o: \
- /home/chris/workspace_android/JabberAudio/jni/aecm/echo_control_mobile.c \
+obj/local/armeabi/objs/webrtc_aecm/echo_control_mobile.o: \
+ jni/aecm/echo_control_mobile.c \
  /home/chris/work/webrtc/source/voe/3.31/webrtc/modules/audio_processing/aecm/include/echo_control_mobile.h \
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/stdlib.h \
  /home/chris/work/android/android-ndk-r8d/platforms/android-14/arch-arm/usr/include/sys/cdefs.h \

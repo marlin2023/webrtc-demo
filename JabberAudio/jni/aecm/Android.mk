@@ -17,13 +17,16 @@ LOCAL_SRC_FILES := \
         real_fft.c	\
         cross_correlation.c	\
         downsample_fast.c	\
-        vector_scaling_operations.c
+        vector_scaling_operations.c	\
+        com_jabber_audio_encoder_AudioWebrtcAecm.c
         
 LOCAL_C_INCLUDES := $(JNI_H_INCLUDE)
 LOCAL_C_INCLUDES +=/home/chris/work/webrtc/source/voe/3.31
 LOCAL_C_INCLUDES +=/home/chris/work/webrtc/source/voe/3.31/webrtc 
  
 LOCAL_CFLAGS := -DWEBRTC_ANDROID
+
+LOCAL_LDLIBS := -llog
 
 LOCAL_MODULE    := webrtc_aecm
 LOCAL_PRELINK_MODULE := false

@@ -16,6 +16,21 @@
 #define FRAME_SIZE 160
 
 
+/*rtpsession.c*/
+static void rtp_header_init_from_session(rtp_header_t *rtp){
+	rtp->version = 2;
+	rtp->padbit = 0;
+	rtp->extbit = 0;
+	rtp->markbit= 0;
+	rtp->cc = 0;
+	rtp->paytype = SPEEX_PAYLOAD_TYPE;//session->snd.pt;
+	rtp->ssrc = 0;//set later
+	rtp->timestamp = 0;	//
+	/* set a seq number */
+	rtp->seq_number=0;
+}
+
+
 int  spx_encode_init(){
 
     speex_encode_union_t * speex_encode_u = malloc(sizeof(speex_encode_union_t));
@@ -52,16 +67,12 @@ int spx_encode_frame(int handle ,short *const pcm_data ,char *speex_data){
     for (i = 0; i < FRAME_SIZE; i++)
     			input[i] = pcm_data[i];
     speex_encode(speex_encode_u->state, input, &speex_encode_u->bits);
+
+    //write rtp packet header
+    memcpy(speex_data ,&speex_encode_u->rtp_header ,RTP_HEADER_SIZE);
     /*Copy the bits to an array of char that can be written*/
-//    nbBytes = speex_bits_write(&speex_encode_u->bits, cbits, 200);
-    int nbBytes = speex_bits_write(&speex_encode_u->bits, speex_data, 38);
+    int nbBytes = speex_bits_write(&speex_encode_u->bits, &speex_data[RTP_HEADER_SIZE], 38);
     printf("nbBytes = %d \n" ,nbBytes);
-//    /*Write the size of the frame first. This is what sampledec expects but
-//     it’s likely to be different in your own application*/
-//    fwrite(&nbBytes, sizeof(int), 1, stdout);
-//    printf("nbBytes = %d \n" ,nbBytes);
-//    /*Write the compressed data*/
-//    //fwrite(cbits, 1, nbBytes, stdout);
 }
 
 int spx_destroy(int handle ){

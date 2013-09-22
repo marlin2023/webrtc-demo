@@ -132,6 +132,7 @@ public class MainActivity extends Activity {
 				pcmPlayBuffer = audioDecodeSpeex1.spxDecodeFrame(speexHandle, speexData.array());
 				//play audio
 				audioTrack.write(pcmPlayBuffer, 0, 160);
+				audioTrack.w
 			}
 		}
 		

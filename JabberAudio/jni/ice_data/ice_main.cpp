@@ -18,6 +18,7 @@ extern "C"
 #include "speex_decode.h"
 #include "custom_java_cb.h"
 }
+#define TAG  "ICE_MAIN_CPP"
 /*
  * LogCallback function: use to manager log printed by ice library
  * @param buffer: log information
@@ -28,7 +29,6 @@ static void log_cb(const char *buffer){
 	__android_log_print(ANDROID_LOG_INFO, "ICE", buffer);
 }
 
-
 /*
  * RxCallback function
  * @param userData: ?
@@ -37,6 +37,7 @@ static void log_cb(const char *buffer){
  *
  * */
 static void recv_data_cb(IceEndpoint* endp, uint_t chnId, void* userData, void* buffer, size_t size){
+	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"in recv_data_cb function ,userData = %p" ,userData);
 	//1.receive audio rtp packet (buffer)
 	int speex_decode_handle = *((int *)userData);
 
@@ -46,24 +47,47 @@ static void recv_data_cb(IceEndpoint* endp, uint_t chnId, void* userData, void* 
 
 	short decoded_audio[160]={0};
 	//3.decode speex data
+	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"before spx_decode_frame  ,buffer data address =%p ,speex_decode_handle =%d" ,buffer ,speex_decode_handle);
 	spx_decode_frame(speex_decode_handle,(char *)speex_audio_data ,(short *)decoded_audio);
 	//4.play pcm data(call back java interface)
+	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after spx_decode_frame ");
 	audio_data_play(g_obj ,160,decoded_audio);
+	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after audio_data_play ");
 }
 
 int voice_call_init(const char* srvIP, unsigned short port ,const char* localId){
+
 
 	//call ice_init
 	//int ice_init(const char* srvIP, ushort_t port, LogCallback logCall);
 	ice_init(srvIP, port, log_cb ,5);
 
 	//localId :the jabber ID for local XMPP client
-	//speex_decode_handle
-	int speex_decode_handle = spx_decode_init();
-		//IceEndpoint* ice_endpoint(const char* localId, void* userData, uint_t chnCnt, RxCallback func);
-	IceEndpoint* ice_handle = ice_endpoint(localId, &speex_decode_handle, RTP_CHAN_ID_ONLY, recv_data_cb); //userData :private data for RxCallback
+	__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"before spx_decode_init function ");
 
+	int *speex_decode_handle = (int *)malloc(1 * sizeof(int));
+	if(speex_decode_handle == NULL){
+		__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"speex_decode malloc failed" );
+		return 0;
+	}
+
+	//speex_decode_handle
+	*speex_decode_handle = spx_decode_init();
+	__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"after spx_decode_init function  ,*speex_decode_handle = %d" ,*speex_decode_handle);
+	if(*speex_decode_handle == 0){
+		__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"speex_decode_handle init failed");
+		return 0;
+	}
+		//IceEndpoint* ice_endpoint(const char* localId, void* userData, uint_t chnCnt, RxCallback func);
+	__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"before ice_endpoint function ,*speex_decode_handle =%d ,address =%p" ,*speex_decode_handle ,speex_decode_handle);
+	IceEndpoint* ice_handle = ice_endpoint(localId, speex_decode_handle, RTP_CHAN_ID_ONLY, recv_data_cb); //userData :private data for RxCallback
+
+	if(ice_handle == NULL){
+		__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"ice_endpoint failed ,localId =%s" ,localId);
+		return 0;
+	}
 	//return handle
+	return (int)ice_handle;
 }
 //
 void* ice_get_info(int handle, uint_t* size){
@@ -75,6 +99,8 @@ void* ice_get_info(int handle, uint_t* size){
 
 int voice_call_establish(int handle ,const char* remoteId ,void* info, uint_t infoSz){
 	IceEndpoint* ice_handle = (IceEndpoint* )handle;
+
+//	__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"" ,localId);
 	ice_establish(ice_handle, remoteId, info, infoSz);
 }
 

@@ -13,11 +13,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.jabber.audio.encoder.AudioEncodeSpeex;
 import com.jabber.audio.encoder.AudioTransJniApi;
 import com.jabber.audio.encoder.AudioWebrtcNs;
+import com.jabber.jni.Ice_Jni;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -33,6 +35,9 @@ import java.util.Enumeration;
 
 public class MainActivity extends Activity {
     Button btnStart ,btnStop ,btnExit;
+    Button btnGetInfo;
+    
+    EditText infoId;
     int recBufSize;
     AudioRecord audioRecord;
     boolean isRecording = false;//是否录放的标记
@@ -55,52 +60,103 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+//		setContentView(R.layout.activity_main);
+		setContentView(R.layout.main);
 		
-        recBufSize = AudioRecord.getMinBufferSize(sampleRateInHz,
-                channelConfiguration, audioFormat);
-
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRateInHz,
-                channelConfiguration, audioFormat, recBufSize);
-
-
-        btnStart = (Button)this.findViewById(R.id.record_start);
-        btnStart.setOnClickListener(new StartRecord());
-
-        btnStop = (Button)this.findViewById(R.id.record_stop);
-        btnStop.setOnClickListener(new StopRecord());
-        
-        //new file 
-        File path1 = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/yanlong");
-        path1.mkdirs();
-        try{
-        	recordingFile = File.createTempFile("recording", ".spx" ,path1);
-        }catch(IOException e1){
-        	throw new RuntimeException("sdafjjjjjjjjjj" , e1);
-        }
-        
-        try {
-			dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(recordingFile)));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        
-        //-----------------------------play audio data -------------------
-		//do audioTrack work
-		bufferSize = AudioTrack.getMinBufferSize(frequency,
-				AudioFormat.CHANNEL_CONFIGURATION_MONO,  
-				AudioFormat.ENCODING_PCM_16BIT);
-		//init audioTrack
-		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-				frequency,
-				AudioFormat.CHANNEL_CONFIGURATION_MONO, 
-				AudioFormat.ENCODING_PCM_16BIT, bufferSize,
-				AudioTrack.MODE_STREAM);
+		
+		
+		
+		btnGetInfo = (Button)this.findViewById(R.id.get_info);
+		btnGetInfo.setOnClickListener(new putIceInfo());
+		
+		infoId = (EditText)this.findViewById(R.id.editText1);
+		
+		
+//        recBufSize = AudioRecord.getMinBufferSize(sampleRateInHz,
+//                channelConfiguration, audioFormat);
+//
+//        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRateInHz,
+//                channelConfiguration, audioFormat, recBufSize);
+//
+//
+//        btnStart = (Button)this.findViewById(R.id.record_start);
+//        btnStart.setOnClickListener(new StartRecord());
+//
+//        btnStop = (Button)this.findViewById(R.id.record_stop);
+//        btnStop.setOnClickListener(new StopRecord());
+//        
+//        //new file 
+//        File path1 = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/yanlong");
+//        path1.mkdirs();
+//        try{
+//        	recordingFile = File.createTempFile("recording", ".spx" ,path1);
+//        }catch(IOException e1){
+//        	throw new RuntimeException("sdafjjjjjjjjjj" , e1);
+//        }
+//        
+//        try {
+//			dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(recordingFile)));
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//        
+//        
+//        //-----------------------------play audio data -------------------
+//		//do audioTrack work
+//		bufferSize = AudioTrack.getMinBufferSize(frequency,
+//				AudioFormat.CHANNEL_CONFIGURATION_MONO,  
+//				AudioFormat.ENCODING_PCM_16BIT);
+//		//init audioTrack
+//		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+//				frequency,
+//				AudioFormat.CHANNEL_CONFIGURATION_MONO, 
+//				AudioFormat.ENCODING_PCM_16BIT, bufferSize,
+//				AudioTrack.MODE_STREAM);
 
 	}
 
+    //停止录音
+    class putIceInfo implements View.OnClickListener{
+
+        @Override
+        public void onClick(View view) {
+            
+        	Log.e("chris", "infoID: " + infoId.getText());
+        	int me_mark =  Integer.valueOf(infoId.getText().toString());
+        	Log.e("chris", "me_mark :" + me_mark);
+        	int handle = 0;
+        	if(me_mark == 1){
+        		handle = Ice_Jni.init("117.79.132.12", 3478, "1");
+        	}else if(me_mark == 2){
+        		handle = Ice_Jni.init("117.79.132.12", 3478, "2");
+        	}
+        	if(handle == 0){
+        		Log.e("chris", "init failed .....");
+        		finish();
+        	}
+        		
+        	Integer ice_size = 0;
+        	Ice_Jni.get_info(handle, ice_size, me_mark);
+        	
+        	try {
+				Thread.sleep(5 * 1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	if(me_mark == 1){
+        		//call 2
+        		Log.e("chris", "call mark :" + 2);
+        		Ice_Jni.establish(handle, "2", "", 0, me_mark);
+        	}else if(me_mark == 2){
+        		//call 1
+        		Log.e("chris", "call mark :" + 1);
+        		Ice_Jni.establish(handle, "2", "", 0, me_mark);
+        	}
+        	
+        }
+    }
 	//get local ip address
 	public String getLocalIpAddress() {  
         try {  

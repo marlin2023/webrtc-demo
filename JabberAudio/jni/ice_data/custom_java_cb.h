@@ -7,6 +7,7 @@
 //global variable
 JavaVM *g_jvm ;
 jobject g_obj;
+jclass g_cls;
 
 
 int audio_data_play(jobject obj ,int audio_size ,short * audio_data);

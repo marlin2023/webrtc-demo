@@ -10,33 +10,43 @@ int audio_data_play(jobject obj ,int audio_size ,short * audio_data){
 	jclass cls;
 	jmethodID mid;
 
+	__android_log_print(ANDROID_LOG_INFO, TAG ,"..in audio_data_play function ");
 	//Attach主线程
 	if ((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL) != JNI_OK) {	//env
-		//LOGE("%s: AttachCurrentThread() failed", __FUNCTION__);
+		__android_log_print(ANDROID_LOG_INFO, TAG ,"AttachCurrentThread() failed");
 		return -1;
 	}
 
-	cls =  (*env)->GetObjectClass(env, obj);
+	cls =  (*env)->GetObjectClass(env, g_obj);
 	if (cls == NULL) {
-		__android_log_print(ANDROID_LOG_INFO, TAG ,".......find class is failed");
+		__android_log_print(ANDROID_LOG_INFO, TAG ,".111......find class is failed");
+		return -1;
+	}
+	jmethodID mid1 = (*env)->GetMethodID(env, cls, "audioPlay", "(I[S)V"); //public void onPrepare();  ////再找类中的方法
+	if (mid1 == NULL) {
+		__android_log_print(ANDROID_LOG_INFO, TAG ,".......get GetStaticMethodID .......id is failed");
 		return -1;
 	}
 
-	mid = (*env)->GetMethodID(env, cls, "audioPlay", "(I[S)V"); //public void onPrepare();
-	if (mid == NULL) {
-		__android_log_print(ANDROID_LOG_INFO, TAG ,".......get method .......id is failed");
-		return -1;
-	}
 
-//	(*env)->CallVoidMethod(env, obj, mid);   //the second parameter value?
-	jshortArray retval = (*env)->NewShortArray(env ,audio_size);
+	jshortArray retval = (*env)->NewShortArray(env ,audio_size);  		//????
 	(*env)->SetShortArrayRegion(env ,retval,0,audio_size,audio_data);
-	(*env)->CallVoidMethod(env, obj, mid ,audio_size ,retval);
-	 //Detach主线程
+	(*env)->CallVoidMethod(env, g_obj, mid1 ,audio_size ,retval);			///use g_obj ,but not cls ,because funtion audioPlay is not static function
+
+	 __android_log_print(ANDROID_LOG_INFO, TAG ,"0 ,audio_size =%d ,audio_data = %p" ,audio_size ,audio_data);
+	 (*env)->DeleteLocalRef(env ,retval);
+	 __android_log_print(ANDROID_LOG_INFO, TAG ,"1");
+	 (*env)->DeleteLocalRef(env ,cls);
+	 __android_log_print(ANDROID_LOG_INFO, TAG ,"2");
+
+	//Detach主线程
 	 if((*g_jvm)->DetachCurrentThread(g_jvm) != JNI_OK)
 	 {
 		 __android_log_print(ANDROID_LOG_INFO, TAG ,"DetachCurrentThread() failed");
-//		 LOGE("%s: DetachCurrentThread() failed", __FUNCTION__);
+		 return -1;
 	 }
+
+
+
 	return 0;
 }

@@ -68,6 +68,7 @@ JNIEXPORT jshortArray JNICALL Java_com_jabber_audio_encoder_AudioWebrtcNs_yy_1we
 	(*env)->ReleaseShortArrayElements(env, input_frame, native_input_frame, 0);
 	(*env)->ReleaseShortArrayElements(env, temp, native_output_frame, 0);
 
+	(*env)->DeleteLocalRef(env ,temp);
 	return output_shorts;
 
 }

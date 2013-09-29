@@ -13,7 +13,7 @@ LOCAL_MODULE := ice_data_transport
 
 LOCAL_SHARED_LIBRARIES := libutils
 
-LOCAL_LDLIBS := -fpic -D_CHRIS -llog  -L/home/chris/work/ffmpeg/source/speex-arm/lib  -lspeex  -Xlinker "-(" -lprotobuf  -lice-helper  -lpjnath -lpjlib-util -lpj -Xlinker "-)"  
+LOCAL_LDLIBS := -fpic -D_CHRIS -Wl,-Map=test.map -g -llog  -L/home/chris/work/ffmpeg/source/speex-arm/lib  -lspeex  -Xlinker "-(" -lprotobuf  -lice-helper  -lpjnath -lpjlib-util -lpj -Xlinker "-)"  
 LOCAL_LDLIBS += -L/home/chris/work/android/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.4.3/libs/armeabi-v7a  -lgnustl_static
 
 LOCAL_PRELINK_MODULE := false

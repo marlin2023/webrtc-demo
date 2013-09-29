@@ -3,18 +3,18 @@ package com.jabber.jni;
 public class Ice_Jni {
 
     static {
-        System.loadLibrary("Encrypt");
+        System.loadLibrary("ice_data_transport");
     }
 
     /* native function */
     private native static int voice_call_init(String srvIP, int port, String jabberID);
 
     /* native function */
-    private native static String ice_get_info(int handle, Integer size);
+    private native static String ice_get_info(int handle, Integer size ,int no_mark);
 
     /* native function */
     private native static int voice_call_establish(int handle, String remoteId, String info,
-            int infoSz);
+            int infoSz ,int me_mark);
 
     /* native function */
     private native static String voice_call_destoy(int handle);
@@ -26,12 +26,12 @@ public class Ice_Jni {
         return voice_call_init(srvIP, port, jabberID);
     }
 
-    public static String get_info(int handle, Integer size) {
-        return ice_get_info(handle, size);
+    public static String get_info(int handle, Integer size ,int no_mark) {
+        return ice_get_info(handle, size ,no_mark);
     }
 
-    public static int establish(int handle, String remoteId, String info, int infoSz) {
-        return voice_call_establish(handle, remoteId, info, infoSz);
+    public static int establish(int handle, String remoteId, String info, int infoSz ,int me_mark) {
+        return voice_call_establish(handle, remoteId, info, infoSz ,me_mark);
     }
 
     public static void destoy(int handle) {

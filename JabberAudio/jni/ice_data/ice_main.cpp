@@ -9,6 +9,7 @@
 //#endif
 #include <stdio.h>
 #include <android/log.h>
+#include <time.h>
 
 #include "ice.h"
 #include "ice_main.h"
@@ -36,8 +37,20 @@ static void log_cb(const char *buffer){
  * @param size: 	receive data  size
  *
  * */
+FILE *fp_speex_recv;
+
 static void recv_data_cb(IceEndpoint* endp, uint_t chnId, void* userData, void* buffer, size_t size){
-	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"in recv_data_cb function ,userData = %p" ,userData);
+	struct timeval tv;
+	double time_start;
+	double time_end;
+	double difftime;
+	gettimeofday(&tv ,NULL);
+	time_start =tv.tv_sec * 1000000 + tv.tv_usec;
+
+	//__android_log_print(ANDROID_LOG_ERROR ,TAG ,"in recv_data_cb function ,userData = %p" ,userData);
+	if(size != 50){
+		__android_log_print(ANDROID_LOG_ERROR ,TAG ,"in recv_data_cb function ,size = %d" ,size);
+	}
 	//1.receive audio rtp packet (buffer)
 	int speex_decode_handle = *((int *)userData);
 
@@ -47,20 +60,32 @@ static void recv_data_cb(IceEndpoint* endp, uint_t chnId, void* userData, void* 
 
 	short decoded_audio[160]={0};
 	//3.decode speex data
-	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"before spx_decode_frame  ,buffer data address =%p ,speex_decode_handle =%d" ,buffer ,speex_decode_handle);
+	//write speex encode data
+//
+	fwrite(speex_audio_data ,1 ,38 ,fp_speex_recv);
+////	//__android_log_print(ANDROID_LOG_ERROR ,TAG ,"before spx_decode_frame  ,buffer data address =%p ,speex_decode_handle =%d" ,buffer ,speex_decode_handle);
 	spx_decode_frame(speex_decode_handle,(char *)speex_audio_data ,(short *)decoded_audio);
 	//4.play pcm data(call back java interface)
-	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after spx_decode_frame ");
+	//__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after spx_decode_frame ");
 	audio_data_play(g_obj ,160,decoded_audio);
-	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after audio_data_play ");
+//	//__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after audio_data_play ");
+
+	gettimeofday(&tv ,NULL);
+	time_end =tv.tv_sec * 1000000 + tv.tv_usec;  //单位是 微妙
+	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"## recv data size =%d ,recv diff time :%.5f \n" , size ,(double)(time_end - time_start)/1000000);
 }
 
 int voice_call_init(const char* srvIP, unsigned short port ,const char* localId){
 
+	fp_speex_recv = fopen("/sdcard/speex_recv.spx" ,"w+");
+	if(fp_speex_recv == NULL){
+		__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"open sdcard/speex.spx file failed");
+	}
 
 	//call ice_init
 	//int ice_init(const char* srvIP, ushort_t port, LogCallback logCall);
 	ice_init(srvIP, port, log_cb ,5);
+//	ice_init(srvIP, port, log_cb ,3);  //set ice log level
 
 	//localId :the jabber ID for local XMPP client
 	__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"before spx_decode_init function ");

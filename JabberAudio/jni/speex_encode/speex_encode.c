@@ -9,12 +9,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <android/log.h>
 #include "speex_encode.h"
-
+FILE *fp_speex_send = NULL;
 ///*The frame size in hardcoded for this sample code but it doesn’t have to be*/
 #define FRAME_SIZE 160
-
+#define TAG "SPEEX_ENCODE_C"
 
 /*rtpsession.c*/
 static void rtp_header_init_from_session(rtp_header_t *rtp){
@@ -33,6 +33,11 @@ static void rtp_header_init_from_session(rtp_header_t *rtp){
 
 int  spx_encode_init(){
 
+    fp_speex_send = fopen("/sdcard/speex_send.spx" ,"w+");
+	if(fp_speex_send == NULL){
+		__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"open sdcard/fp_speex_send.spx file failed");
+	}
+	__android_log_print(ANDROID_LOG_ERROR ,"ICE_MAIN" ,"after create '/sdcard/speex_send.spx'");
     speex_encode_union_t * speex_encode_u = malloc(sizeof(speex_encode_union_t));
     if(speex_encode_u == NULL){
         printf("speex_encode_union malloc failed ...\n");
@@ -72,6 +77,9 @@ int spx_encode_frame(int handle ,short *const pcm_data ,char *speex_data){
     memcpy(speex_data ,&speex_encode_u->rtp_header ,RTP_HEADER_SIZE);
     /*Copy the bits to an array of char that can be written*/
     int nbBytes = speex_bits_write(&speex_encode_u->bits, &speex_data[RTP_HEADER_SIZE], 38);
+    //__android_log_print(ANDROID_LOG_ERROR ,TAG ,"before fwrite");
+    fwrite(&speex_data[RTP_HEADER_SIZE] ,1 ,38 ,fp_speex_send);
+    //__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after fwrite");
     printf("nbBytes = %d \n" ,nbBytes);
 }
 

@@ -1,7 +1,7 @@
 #include "com_jabber_audio_encoder_AudioEncodeSpeex.h"
 #include "speex_encode.h"
 #include <stdlib.h>
-
+#include <stdio.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -14,10 +14,12 @@ extern "C" {
  * Method:    yy_speex_encode_init
  * Signature: ()I
  */
+
 JNIEXPORT jint JNICALL Java_com_jabber_audio_encoder_AudioEncodeSpeex_yy_1speex_1encode_1init
   (JNIEnv *env, jobject obj){
 
     int speex_handle = spx_encode_init();
+
 }
 
 
@@ -36,7 +38,7 @@ JNIEXPORT jint JNICALL Java_com_jabber_audio_encoder_AudioEncodeSpeex_yy_1speex_
 	jbyte *directBuffer = (*env)->GetDirectBufferAddress(env, speex_data);
 
     spx_encode_frame(speex_handle ,(short *)pcm ,(char * )directBuffer);
-    __android_log_print(ANDROID_LOG_ERROR ,TAG ,"after spx_encode_frame ,in encode audio data");
+    //__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after spx_encode_frame ,in encode audio data");
 
     (*env)->ReleaseShortArrayElements(env ,pcm_data ,pcm ,0);
   }

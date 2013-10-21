@@ -41,21 +41,19 @@ int spx_decode_frame(int handle ,char *src_speex_data ,short *target_pcm_data_bu
 //	short out[FRAME_SIZE];
 	/*Speex handle samples as float, so we need an array of floats*/
 	float output[FRAME_SIZE];
-	__android_log_print(ANDROID_LOG_INFO, TAG ,"..before speex_bits_read_from ,handle =%d " ,handle);
+	//__android_log_print(ANDROID_LOG_INFO, TAG ,"..before speex_bits_read_from ,handle =%d " ,handle);
 	int nbBytesSpeex = 38;
 	/*Copy the data into the bit-stream struct*/  //speex_data -> receive speex audio data
 	speex_bits_read_from(&speex_decode_u->bits, src_speex_data, nbBytesSpeex);
-	__android_log_print(ANDROID_LOG_INFO, TAG ,"..before speex_decode");
+	//__android_log_print(ANDROID_LOG_INFO, TAG ,"..before speex_decode");
 	/*Decode the data*/
 	speex_decode(speex_decode_u->state, &speex_decode_u->bits, output); //here ,is float data
-	__android_log_print(ANDROID_LOG_INFO, TAG ,"..after speex_decode");
+	//__android_log_print(ANDROID_LOG_INFO, TAG ,"..after speex_decode");
 	/*Copy from float to short (16 bits) for output*/
 	int i ;
 	for (i = 0; i < FRAME_SIZE; i++)
 		target_pcm_data_buffer[i] = output[i];
-	__android_log_print(ANDROID_LOG_INFO, TAG ,"..before return ");
-//	/*Write the decoded audio to file*/
-//	fwrite(out, sizeof(short), FRAME_SIZE, fout);
+	//__android_log_print(ANDROID_LOG_INFO, TAG ,"..before return ");
 	return 0;
 
 }

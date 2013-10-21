@@ -10,7 +10,7 @@ int audio_data_play(jobject obj ,int audio_size ,short * audio_data){
 	jclass cls;
 	jmethodID mid;
 
-	__android_log_print(ANDROID_LOG_INFO, TAG ,"..in audio_data_play function ");
+	//__android_log_print(ANDROID_LOG_INFO, TAG ,"..in audio_data_play function ");
 	//Attach主线程
 	if ((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL) != JNI_OK) {	//env
 		__android_log_print(ANDROID_LOG_INFO, TAG ,"AttachCurrentThread() failed");
@@ -33,11 +33,9 @@ int audio_data_play(jobject obj ,int audio_size ,short * audio_data){
 	(*env)->SetShortArrayRegion(env ,retval,0,audio_size,audio_data);
 	(*env)->CallVoidMethod(env, g_obj, mid1 ,audio_size ,retval);			///use g_obj ,but not cls ,because funtion audioPlay is not static function
 
-	 __android_log_print(ANDROID_LOG_INFO, TAG ,"0 ,audio_size =%d ,audio_data = %p" ,audio_size ,audio_data);
+	// __android_log_print(ANDROID_LOG_INFO, TAG ,"0 ,audio_size =%d ,audio_data = %p" ,audio_size ,audio_data);
 	 (*env)->DeleteLocalRef(env ,retval);
-	 __android_log_print(ANDROID_LOG_INFO, TAG ,"1");
 	 (*env)->DeleteLocalRef(env ,cls);
-	 __android_log_print(ANDROID_LOG_INFO, TAG ,"2");
 
 	//Detach主线程
 	 if((*g_jvm)->DetachCurrentThread(g_jvm) != JNI_OK)

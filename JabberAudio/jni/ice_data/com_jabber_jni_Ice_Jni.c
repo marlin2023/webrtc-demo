@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <sys/timeb.h>
 
 #include "android/log.h"
 #include "com_jabber_jni_Ice_Jni.h"
@@ -304,6 +306,22 @@ JNIEXPORT jstring JNICALL Java_com_jabber_jni_Ice_1Jni_voice_1call_1destoy
 
 JNIEXPORT jint JNICALL Java_com_jabber_jni_Ice_1Jni_ice_1send
   (JNIEnv *env, jclass jcs, jint jhandle, jbyteArray jbuffer, jint jsize){
+
+	struct timeval tv;
+	double time_start;
+	double time_end;
+	double difftime;
+	gettimeofday(&tv ,NULL);
+	time_start =tv.tv_sec * 1000000 + tv.tv_usec;
+
+//	struct timeb tp;
+//	struct tm *tm;
+//
+//	ftime(&tp);
+//	tm = localtime(&(tp.time));
+//	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"%02d:%02d:%02d:%03d\n", (tm->tm_hour), (tm->tm_min), (tm->tm_sec),
+//			(tp.millitm));
+
 	int handle = jhandle;
 	if(handle == 0){
 		__android_log_print(ANDROID_LOG_ERROR ,TAG ,"handle invalid ,in ice_send_data");
@@ -313,16 +331,13 @@ JNIEXPORT jint JNICALL Java_com_jabber_jni_Ice_1Jni_ice_1send
 
 	char *voice_data = (char *)((*env)-> GetByteArrayElements(env ,jbuffer ,NULL));   //????
 	unsigned voice_data_size = jsize;
-	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"before ice_send_data in com_jabber_jni_ice_JNI ,size =%d" ,voice_data_size);
 	ice_send_data(handle, voice_data, voice_data_size);
-
 	(*env)->ReleaseByteArrayElements(env ,jbuffer ,voice_data ,0);
-//	(*env)->ReleaseShortArrayElements(env ,pcm_data ,pcm ,0);
-//	void Release<PrimitiveType>ArrayElements(JNIEnv *env,
-//	ArrayType array, NativeType *elems, jint mode);
-	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after ice_send_data in com_jabber_jni_ice_JNI");
+	//__android_log_print(ANDROID_LOG_ERROR ,TAG ,"after ice_send_data in com_jabber_jni_ice_JNI");
 
-
+	gettimeofday(&tv ,NULL);
+	time_end =tv.tv_sec * 1000000 + tv.tv_usec;  //单位是 微妙
+	__android_log_print(ANDROID_LOG_ERROR ,TAG ,"-- send data size =%d ,send diff time :%.5f \n" ,voice_data_size , (double)(time_end - time_start)/1000000);
 
 }
 
